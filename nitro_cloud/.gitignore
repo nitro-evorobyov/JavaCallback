@@ -1,0 +1,8 @@
+*.sdf
+*.suo
+*.opensdf
+/x64
+/Debug
+/ipch
+/nitro_cloud/Debug
+/nitro_cloud/x64

@@ -1,0 +1,4 @@
+LIBRARY nitro_cloud
+
+EXPORTS
+RunSimple @1
