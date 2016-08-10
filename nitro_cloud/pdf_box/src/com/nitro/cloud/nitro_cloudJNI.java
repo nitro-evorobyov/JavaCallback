@@ -14,8 +14,8 @@ public class nitro_cloudJNI {
   public final static native long new_TaskSwig__SWIG_0(int jarg1, int jarg2);
   public final static native long new_TaskSwig__SWIG_1(int jarg1);
   public final static native void delete_TaskSwig(long jarg1);
-  public final static native int TaskSwig_OnStarted(long jarg1, TaskSwig jarg1_, String jarg2);
-  public final static native int TaskSwig_OnStartedSwigExplicitTaskSwig(long jarg1, TaskSwig jarg1_, String jarg2);
+  public final static native int TaskSwig_OnStarted(long jarg1, TaskSwig jarg1_, int jarg2, String jarg3);
+  public final static native int TaskSwig_OnStartedSwigExplicitTaskSwig(long jarg1, TaskSwig jarg1_, int jarg2, String jarg3);
   public final static native int TaskSwig_OnProgress(long jarg1, TaskSwig jarg1_, int jarg2, int jarg3, String jarg4);
   public final static native int TaskSwig_OnProgressSwigExplicitTaskSwig(long jarg1, TaskSwig jarg1_, int jarg2, int jarg3, String jarg4);
   public final static native void TaskSwig_OnFinished(long jarg1, TaskSwig jarg1_, int jarg2, String jarg3);
@@ -24,8 +24,8 @@ public class nitro_cloudJNI {
   public final static native void TaskSwig_change_ownership(TaskSwig obj, long cptr, boolean take_or_release);
   public final static native long TaskSwig_SWIGUpcast(long jarg1);
 
-  public static int SwigDirector_TaskSwig_OnStarted(TaskSwig jself, String someMessage) {
-    return (jself.OnStarted(someMessage)).swigValue();
+  public static int SwigDirector_TaskSwig_OnStarted(TaskSwig jself, int taskId, String someMessage) {
+    return (jself.OnStarted(taskId, someMessage)).swigValue();
   }
   public static int SwigDirector_TaskSwig_OnProgress(TaskSwig jself, int progress, int upperBound, String someMessage) {
     return (jself.OnProgress(progress, upperBound, someMessage)).swigValue();

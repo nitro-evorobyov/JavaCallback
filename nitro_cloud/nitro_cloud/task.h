@@ -21,9 +21,11 @@ private:
     int     m_sleepCount;
     int     m_failedStep;
 
-    virtual TaskCallbackCommnad OnStarted(const std::string& someMessage) = 0;
+    virtual TaskCallbackCommnad OnStarted(int taskId, const std::string& someMessage) = 0;
     virtual TaskCallbackCommnad OnProgress(int progress, int upperBound, const std::string& someMessage) = 0;
     virtual void OnFinished(TaskResult taskResult, const std::string& someMessage) = 0;
+
+    virtual void HandleFail() = 0;
 };
 
 }

@@ -694,22 +694,24 @@ SwigDirector_TaskSwig::~SwigDirector_TaskSwig() {
 }
 
 
-nitro::task::TaskCallbackCommnad SwigDirector_TaskSwig::OnStarted(std::string const &someMessage) {
+nitro::task::TaskCallbackCommnad SwigDirector_TaskSwig::OnStarted(int taskId, std::string const &someMessage) {
   nitro::task::TaskCallbackCommnad c_result = SwigValueInit< nitro::task::TaskCallbackCommnad >() ;
   jint jresult = 0 ;
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
+  jint jtaskId  ;
   jstring jsomeMessage = 0 ;
   
   if (!swig_override[0]) {
-    return nitro::task::TaskSwig::OnStarted(someMessage);
+    return nitro::task::TaskSwig::OnStarted(taskId,someMessage);
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
+    jtaskId = (jint) taskId;
     jsomeMessage = jenv->NewStringUTF((&someMessage)->c_str());
     Swig::LocalRefGuard someMessage_refguard(jenv, jsomeMessage); 
-    jresult = (jint) jenv->CallStaticIntMethod(Swig::jclass_nitro_cloudJNI, Swig::director_method_ids[0], swigjobj, jsomeMessage);
+    jresult = (jint) jenv->CallStaticIntMethod(Swig::jclass_nitro_cloudJNI, Swig::director_method_ids[0], swigjobj, jtaskId, jsomeMessage);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
       jenv->ExceptionClear();
@@ -794,7 +796,7 @@ void SwigDirector_TaskSwig::swig_connect_director(JNIEnv *jenv, jobject jself, j
     jmethodID base_methid;
   } methods[] = {
     {
-      "OnStarted", "(Ljava/lang/String;)Lcom/nitro/cloud/TaskCallbackCommnad;", NULL 
+      "OnStarted", "(ILjava/lang/String;)Lcom/nitro/cloud/TaskCallbackCommnad;", NULL 
     },
     {
       "OnProgress", "(IILjava/lang/String;)Lcom/nitro/cloud/TaskCallbackCommnad;", NULL 
@@ -895,51 +897,55 @@ SWIGEXPORT void JNICALL Java_com_nitro_cloud_nitro_1cloudJNI_delete_1TaskSwig(JN
 }
 
 
-SWIGEXPORT jint JNICALL Java_com_nitro_cloud_nitro_1cloudJNI_TaskSwig_1OnStarted(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+SWIGEXPORT jint JNICALL Java_com_nitro_cloud_nitro_1cloudJNI_TaskSwig_1OnStarted(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3) {
   jint jresult = 0 ;
   nitro::task::TaskSwig *arg1 = (nitro::task::TaskSwig *) 0 ;
-  std::string *arg2 = 0 ;
+  int arg2 ;
+  std::string *arg3 = 0 ;
   nitro::task::TaskCallbackCommnad result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(nitro::task::TaskSwig **)&jarg1; 
-  if(!jarg2) {
+  arg2 = (int)jarg2; 
+  if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
     return 0;
   }
-  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
-  if (!arg2_pstr) return 0;
-  std::string arg2_str(arg2_pstr);
-  arg2 = &arg2_str;
-  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
-  result = (nitro::task::TaskCallbackCommnad)(arg1)->OnStarted((std::string const &)*arg2);
+  const char *arg3_pstr = (const char *)jenv->GetStringUTFChars(jarg3, 0); 
+  if (!arg3_pstr) return 0;
+  std::string arg3_str(arg3_pstr);
+  arg3 = &arg3_str;
+  jenv->ReleaseStringUTFChars(jarg3, arg3_pstr); 
+  result = (nitro::task::TaskCallbackCommnad)(arg1)->OnStarted(arg2,(std::string const &)*arg3);
   jresult = (jint)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jint JNICALL Java_com_nitro_cloud_nitro_1cloudJNI_TaskSwig_1OnStartedSwigExplicitTaskSwig(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+SWIGEXPORT jint JNICALL Java_com_nitro_cloud_nitro_1cloudJNI_TaskSwig_1OnStartedSwigExplicitTaskSwig(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3) {
   jint jresult = 0 ;
   nitro::task::TaskSwig *arg1 = (nitro::task::TaskSwig *) 0 ;
-  std::string *arg2 = 0 ;
+  int arg2 ;
+  std::string *arg3 = 0 ;
   nitro::task::TaskCallbackCommnad result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(nitro::task::TaskSwig **)&jarg1; 
-  if(!jarg2) {
+  arg2 = (int)jarg2; 
+  if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
     return 0;
   }
-  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
-  if (!arg2_pstr) return 0;
-  std::string arg2_str(arg2_pstr);
-  arg2 = &arg2_str;
-  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
-  result = (nitro::task::TaskCallbackCommnad)(arg1)->nitro::task::TaskSwig::OnStarted((std::string const &)*arg2);
+  const char *arg3_pstr = (const char *)jenv->GetStringUTFChars(jarg3, 0); 
+  if (!arg3_pstr) return 0;
+  std::string arg3_str(arg3_pstr);
+  arg3 = &arg3_str;
+  jenv->ReleaseStringUTFChars(jarg3, arg3_pstr); 
+  result = (nitro::task::TaskCallbackCommnad)(arg1)->nitro::task::TaskSwig::OnStarted(arg2,(std::string const &)*arg3);
   jresult = (jint)result; 
   return jresult;
 }
@@ -1085,7 +1091,7 @@ SWIGEXPORT void JNICALL Java_com_nitro_cloud_nitro_1cloudJNI_swig_1module_1init(
     const char *signature;
   } methods[3] = {
     {
-      "SwigDirector_TaskSwig_OnStarted", "(Lcom/nitro/cloud/TaskSwig;Ljava/lang/String;)I" 
+      "SwigDirector_TaskSwig_OnStarted", "(Lcom/nitro/cloud/TaskSwig;ILjava/lang/String;)I" 
     },
     {
       "SwigDirector_TaskSwig_OnProgress", "(Lcom/nitro/cloud/TaskSwig;IILjava/lang/String;)I" 

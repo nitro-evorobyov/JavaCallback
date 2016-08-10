@@ -18,7 +18,7 @@ public:
     SwigDirector_TaskSwig(JNIEnv *jenv, int sleepCount, int failedStep);
     SwigDirector_TaskSwig(JNIEnv *jenv, int sleepCount);
     virtual ~SwigDirector_TaskSwig();
-    virtual nitro::task::TaskCallbackCommnad OnStarted(std::string const &someMessage);
+    virtual nitro::task::TaskCallbackCommnad OnStarted(int taskId, std::string const &someMessage);
     virtual nitro::task::TaskCallbackCommnad OnProgress(int progress, int upperBound, std::string const &someMessage);
     virtual void OnFinished(nitro::task::TaskResult taskResult, std::string const &someMessage);
 public:

@@ -35,7 +35,7 @@ void TaskJni::SetOnFinish(OnFinish onFinish)
 }
 
 
-TaskCallbackCommnad TaskJni::OnStarted(const std::string& /*someMessage*/)
+TaskCallbackCommnad TaskJni::OnStarted(int taskId, const std::string& /*someMessage*/)
 {
     return m_startCallback();
 }

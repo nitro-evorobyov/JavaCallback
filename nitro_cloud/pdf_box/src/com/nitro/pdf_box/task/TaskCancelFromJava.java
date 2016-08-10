@@ -1,20 +1,20 @@
-package com.nitro.pdf_box;
+package com.nitro.pdf_box.task;
 
 import com.nitro.cloud.TaskCallbackCommnad;
 
 /**
  * Created by evorobyov on 29.07.2016.
  */
-public class CancelJavaTask extends JavaTask {
+public class TaskCancelFromJava extends TaskSimple {
 
     private int taskCancelStep;
 
-    public CancelJavaTask(int cancelStep, int sleepCount,int failedStep) {
+    public TaskCancelFromJava(int cancelStep, int sleepCount, int failedStep) {
         super(sleepCount, failedStep);
         taskCancelStep = cancelStep;
     }
 
-    public CancelJavaTask(int cancelStep, int sleepCount) {
+    public TaskCancelFromJava(int cancelStep, int sleepCount) {
         super(sleepCount);
         taskCancelStep = cancelStep;
     }

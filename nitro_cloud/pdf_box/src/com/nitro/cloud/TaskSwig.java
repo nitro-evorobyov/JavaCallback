@@ -60,8 +60,8 @@ public class TaskSwig extends Task {
     nitro_cloudJNI.TaskSwig_director_connect(this, swigCPtr, swigCMemOwn, true);
   }
 
-  public TaskCallbackCommnad OnStarted(String someMessage) {
-    return TaskCallbackCommnad.swigToEnum((getClass() == TaskSwig.class) ? nitro_cloudJNI.TaskSwig_OnStarted(swigCPtr, this, someMessage) : nitro_cloudJNI.TaskSwig_OnStartedSwigExplicitTaskSwig(swigCPtr, this, someMessage));
+  public TaskCallbackCommnad OnStarted(int taskId, String someMessage) {
+    return TaskCallbackCommnad.swigToEnum((getClass() == TaskSwig.class) ? nitro_cloudJNI.TaskSwig_OnStarted(swigCPtr, this, taskId, someMessage) : nitro_cloudJNI.TaskSwig_OnStartedSwigExplicitTaskSwig(swigCPtr, this, taskId, someMessage));
   }
 
   public TaskCallbackCommnad OnProgress(int progress, int upperBound, String someMessage) {

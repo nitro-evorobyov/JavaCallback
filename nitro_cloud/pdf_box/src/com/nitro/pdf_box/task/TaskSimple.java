@@ -1,4 +1,4 @@
-package com.nitro.pdf_box;
+package com.nitro.pdf_box.task;
 
 import com.nitro.cloud.TaskCallbackCommnad;
 import com.nitro.cloud.TaskResult;
@@ -10,16 +10,18 @@ import java.util.Vector;
 /**
  * Created by evorobyov on 28.07.2016.
  */
-public class JavaTask extends TaskSwig {
+public class TaskSimple extends TaskSwig {
 
     private Vector<TaskSwig> registerTaskCollection = null;
 
-    public JavaTask (int sleepCount, int failedStep) {
+    private MessageCollector    messageCollector = null;
+
+    public TaskSimple(int sleepCount, int failedStep) {
         super(sleepCount, failedStep);
 
     }
 
-    public JavaTask (int sleepCount)
+    public TaskSimple(int sleepCount)
     {
         super(sleepCount);
     }
@@ -39,11 +41,21 @@ public class JavaTask extends TaskSwig {
         }
     }
 
-    public TaskCallbackCommnad OnStarted(String someMessage) {
+    public TaskCallbackCommnad OnStarted(int taskId, String someMessage) {
         PrintStream logger = System.out;
+
+        if(messageCollector == null) {
+            String  collectorFile = "task_log_" + taskId + ".txt";
+            messageCollector = new MessageCollector(collectorFile);
+        }
+
+        messageCollector.Collect(someMessage);
+
         synchronized(logger) {
             logger.println(someMessage);
         }
+
+
         return TaskCallbackCommnad.TaskContinue;
     }
 
@@ -57,10 +69,21 @@ public class JavaTask extends TaskSwig {
             logger.print(upperBound);
             logger.println(" steps.");
         }
+
+        if(messageCollector != null) {
+            messageCollector.Collect(someMessage);
+        }
+
         return TaskCallbackCommnad.TaskContinue;
     }
 
     public void OnFinished(TaskResult taskResult, String someMessage) {
+
+        if(messageCollector != null) {
+            messageCollector.Collect(someMessage);
+            messageCollector.Finished();
+        }
+
         if(registerTaskCollection!= null) {
             synchronized(registerTaskCollection) {
                 registerTaskCollection.remove(this);

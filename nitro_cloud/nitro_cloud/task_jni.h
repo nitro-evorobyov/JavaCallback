@@ -30,7 +30,7 @@ private:
     OnStart             m_startCallback;
     OnFinish            m_finishCallback;
 
-    TaskCallbackCommnad OnStarted(const std::string& someMessage) override;
+    TaskCallbackCommnad OnStarted(int taskId, const std::string& someMessage) override;
     TaskCallbackCommnad OnProgress(int progress, int upperBound, const std::string& someMessage) override;
     void OnFinished(TaskResult taskResult, const std::string& someMessage) override;
 };

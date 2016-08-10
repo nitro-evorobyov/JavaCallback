@@ -2,6 +2,8 @@
 #include <thread>
 #include <sstream>
 
+#include <windows.h>
+
 #include "task.h"
 
 #include "logger.h"
@@ -37,7 +39,7 @@ void Task::Run()
         //NITRO_TRACE() << "Call: java callback - OnStarted";
 
         javeMessageCreator << "Java: Start." << " task id = " << threadId;
-        if (OnStarted(javeMessageCreator.str()) == TaskCancel)
+        if (OnStarted(static_cast<int> (threadId.hash()), javeMessageCreator.str()) == TaskCancel)
         {
             //NITRO_TRACE() << "OnStarted return TaskCancel. So thread canceled from java callback at beggin.";
             //NITRO_TRACE() << "Call: java callback - OnFinished";
@@ -57,28 +59,44 @@ void Task::Run()
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
             javeMessageCreator << "Java: In progress" << " task id = " << threadId;
-
-            if (m_failedStep == step)
+            try
             {
-                //NITRO_TRACE() << "Failed step handled.";
-                //NITRO_TRACE() << "Call: java callback - OnFinished";
+                if (m_failedStep == step)
+                {
+                    //NITRO_TRACE() << "Failed step handled.";
+                    //NITRO_TRACE() << "Call: java callback - OnFinished";
 
-                javeMessageCreator.str("");
-                javeMessageCreator << "Java: TaskSwig failed internal.";
-                OnFinished(Failed, javeMessageCreator.str());
+                    HandleFail();
+
+                    javeMessageCreator.str("");
+                    javeMessageCreator << "Java: TaskSwig failed internal." << " task id = " << threadId;
+
+                    OnFinished(Failed, javeMessageCreator.str());
+
+                    return;
+                }
+
+                if (OnProgress(step, m_sleepCount, javeMessageCreator.str()) == TaskCancel)
+                {
+                    //NITRO_TRACE() << "OnProgress return TaskCancel. So thread canceled from java callback at beggin.";
+                    //NITRO_TRACE() << "Call: java callback - OnFinished";
+
+                    javeMessageCreator.str("");
+                    javeMessageCreator << "Java: TaskSwig canceled in progress.";
+                    OnFinished(Canceled, javeMessageCreator.str());
+
+                    return;
+                }
             }
-
-            if (OnProgress(step, m_sleepCount, javeMessageCreator.str()) == TaskCancel)
+            catch (std::exception& ex)
             {
-                //NITRO_TRACE() << "OnProgress return TaskCancel. So thread canceled from java callback at beggin.";
-                //NITRO_TRACE() << "Call: java callback - OnFinished";
-
                 javeMessageCreator.str("");
-                javeMessageCreator << "Java: TaskSwig canceled in progress.";
-                OnFinished(Canceled, javeMessageCreator.str());
-
+                //::MessageBox(0, ex.what(), "Exception", MB_OK);
+                javeMessageCreator << "Java: Catch exception." << " task id = " << threadId << ". Information: " << ex.what();
+                OnFinished(Failed, javeMessageCreator.str());
                 return;
             }
+
 
             javeMessageCreator.str("");
         }

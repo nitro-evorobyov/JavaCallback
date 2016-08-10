@@ -30,7 +30,7 @@ TaskSwig::~TaskSwig()
 {
 }
 
-TaskCallbackCommnad TaskSwig::OnStarted(const std::string& /*someMessage*/)
+TaskCallbackCommnad TaskSwig::OnStarted(int taskId, const std::string& /*someMessage*/)
 {
     return TaskNotImplemented;
 }
@@ -41,6 +41,10 @@ TaskCallbackCommnad TaskSwig::OnProgress(int /*progress*/, int /*upperBound*/, c
 }
 
 void TaskSwig::OnFinished(TaskResult /*taskResult*/, const std::string& /*someMessage*/)
+{
+}
+
+void TaskSwig::HandleFail()
 {
 }
 
