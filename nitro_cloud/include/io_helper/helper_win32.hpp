@@ -126,20 +126,40 @@ public:
     template<class TChar>
     static native_io_t connect_to_server(const std::basic_string<TChar>& pipeName)
     {
-        native_io_t     connection_instance = 
-            CreateFile(pipeName.c_str(), 
-                       GENERIC_READ | GENERIC_WRITE,
-                       0, 
-                       nullptr, 
-                       OPEN_EXISTING, 
-                       FILE_FLAG_OVERLAPPED,
-                       nullptr);
+        const unsigned int  connectionTimes = 10;
+        native_io_t         connection_instance = INVALID_HANDLE_VALUE;
+
+        for (unsigned int connectionIndex = 0; connectionTimes > connectionIndex; ++connectionIndex)
+        {
+            connection_instance =
+                CreateFile(pipeName.c_str(),
+                GENERIC_READ | GENERIC_WRITE,
+                0,
+                nullptr,
+                OPEN_EXISTING,
+                FILE_FLAG_OVERLAPPED,
+                nullptr);
+
+            if (connection_instance != INVALID_HANDLE_VALUE)
+                break;
+
+
+            if (GetLastError() != ERROR_PIPE_BUSY)
+            {
+                throw std::runtime_error("Failed to open named pipe");
+            }
+
+            if (!WaitNamedPipe(pipeName.c_str(), 200))
+            {
+                throw std::runtime_error("Could not open pipe: 200 millisecond wait timed out.");
+            }
+
+        }
 
         if (connection_instance == INVALID_HANDLE_VALUE)
         {
-            throw std::runtime_error("failed to open named pipe");
+            throw std::runtime_error("Could not create pipe. pipe is busy.");
         }
-
         return connection_instance;
     }
 

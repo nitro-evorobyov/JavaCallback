@@ -24,10 +24,14 @@ int _tmain(int argc, wchar_t* argv[])
 
 
     std::thread woker1([&](){ioService.run(); });
-    //std::thread woker2([&](){ioService.run(); });
-    std::thread woker3([&]() { server.Run(); });
+    std::thread woker2([&](){ioService.run(); });
+    std::thread woker3([&](){ioService.run(); });
+    std::thread woker4([&](){ioService.run(); });
+    std::thread woker5([&](){ioService.run(); });
 
-    int processNumber = 1;
+    std::thread woker6([&]() { server.Run(); });
+
+    int processNumber = 5;
 
     while (true)
     {
@@ -69,17 +73,20 @@ int _tmain(int argc, wchar_t* argv[])
                     SYNC_OUTPUT() << "[Main:]" << "CreateProcess failed. Last error = " << GetLastError() << ".";
                     return -1;
                 }
-
-                processNumber = 0;
             }
+
+            processNumber = 0;
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10500));
     }
 
     woker1.join();
-    //woker2.join();
+    woker2.join();
     woker3.join();
+    woker4.join(); 
+    woker5.join();
+    woker6.join();
 
 	return 0;
 }

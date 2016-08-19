@@ -83,7 +83,7 @@ int _tmain(int argc, wchar_t* argv[])
 
         SYNC_OUTPUT() << "[Client:]" << "Clinet main thread iteration.";
 
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
     Nitro::Community::helper::close(connectPipe);
