@@ -6,6 +6,7 @@
 #include <fstream>
 #include <ctime>    
 
+#if 0
 
 namespace nitro_unused
 {
@@ -76,3 +77,5 @@ private:
 
 
 #define NITRO_TRACE() nitro::Logger().GetLoggerStream()
+
+#endif
