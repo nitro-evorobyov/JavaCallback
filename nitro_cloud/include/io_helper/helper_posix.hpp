@@ -1,93 +1,102 @@
-/* vim:set ts=3 sw=3 sts=3 et: */
-/**
- * Copyright © 2008-2013 Last.fm Limited
- *
- * This file is part of libmoost.
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge,
- * publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
 
-#ifndef MOOST_IO_DETAIL_HELPER_POSIX_HPP__
-#define MOOST_IO_DETAIL_HELPER_POSIX_HPP__
+#pragma once
 
-#include <boost/asio.hpp>
-#include <unistd.h>
+#include "server_task.hpp"
 
-namespace moost { namespace io { namespace detail {
-
-class helper
+namespace Nitro
 {
-public:
-   typedef int native_io_t;
-   typedef boost::asio::posix::basic_stream_descriptor<> async_stream_t;
-   typedef int error_t;
+    namespace Community
+    {
 
-   static native_io_t duplicate(native_io_t in)
-   {
-      native_io_t duped = ::dup(in);
 
-      if (duped == -1)
-      {
-         throw std::runtime_error("failed to duplicate handle");
-      }
 
-      return duped;
-   }
+        template<class TChar>
+        class Server
+                : public boost::noncopyable
+        {
+        public:
+            Server(const std::basic_string<TChar>& connectionName,
+                   boost::asio::io_service& service)
+                    : m_ioService(service)
+                    , m_serviceHolder(new boost::asio::io_service::work(service))
+                    , m_stopLoop(false)
+                    , m_acceptor(service, boost::asio::local::stream_protocol::endpoint(connectionName))
+            {
+                SYNC_OUTPUT() << "[Server:]" << "Create server.";
+                SYNC_OUTPUT() << "[Server:]" << "Connection name: " << connectionName;
+            }
 
-   static bool close(native_io_t in)
-   {
-      return ::close(in) != -1;
-   }
+            ~Server()
+            {
+                m_acceptor.close();
+                SYNC_OUTPUT() << "[Server:]" << "Finish server.";
+            }
 
-   static void create_pipe(native_io_t& read_end, native_io_t& write_end)
-   {
-      int pfd[2];
+            void Run()
+            {
+                SYNC_OUTPUT() << "[Server:]" "Start awaiting loop.";
 
-      if (pipe(pfd) != 0)
-      {
-         throw std::runtime_error("failed to create pipe");
-      }
 
-      read_end = pfd[0];
-      write_end = pfd[1];
-   }
 
-   static bool write(native_io_t io, const void *data, size_t length, size_t *written)
-   {
-      ssize_t rv = ::write(io, data, length);
+                auto serverTask =
+                        std::make_shared<ServerTask
+                                <TChar, boost::asio::local::stream_protocol::socket>>(m_ioService);
 
-      if (written)
-      {
-         *written = rv >= 0 ? static_cast<size_t>(rv) : 0;
-      }
+                m_acceptor.async_accept(serverTask->GetTransport(),
+                                        boost::bind(&Server::HandleAccept,
+                                                  this,
+                                                  serverTask,
+                                                  boost::asio::placeholders::error));
+            }
 
-      return static_cast<size_t>(rv) == length;
-   }
+            void HandleAccept(
+                    std::shared_ptr<ServerTask<TChar, boost::asio::local::stream_protocol::socket>> serverTask,
+                    const boost::system::error_code& error) {
 
-   static error_t error()
-   {
-      return errno;
-   }
-};
+                if(error)
+                {
+                    return;
+                }
 
-} } }
+                if (m_stopLoop)
+                {
+                    return;
+                }
 
-#endif
+                serverTask->StartListen();
+                serverTask = std::make_shared<ServerTask
+                        <TChar, boost::asio::local::stream_protocol::socket>>(m_ioService);
+                m_acceptor.async_accept(serverTask->GetTransport(),
+                                        boost::bind(&Server::HandleAccept,
+                                                  this,
+                                                  serverTask,
+                                                  boost::asio::placeholders::error));
+            }
+
+           void Stop()
+            {
+                m_stopLoop = true;
+                m_serviceHolder.reset();
+
+                boost::asio::local::stream_protocol::socket unblockSocket(m_acceptor.get_io_service());
+                unblockSocket.connect(m_acceptor.local_endpoint());
+                unblockSocket.close();
+            }
+
+            std::basic_string<TChar>     GetPipeName()
+            {
+                std::basic_string<TChar>    pathPoint;
+                m_acceptor.local_endpoint().path(pathPoint);
+                return pathPoint;
+            }
+
+        private:
+            boost::asio::io_service&        m_ioService;
+            bool                            m_stopLoop;
+
+            std::shared_ptr<boost::asio::io_service::work>   m_serviceHolder;
+            boost::asio::local::stream_protocol::acceptor    m_acceptor;
+        };
+
+    }
+}

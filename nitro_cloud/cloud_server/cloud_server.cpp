@@ -7,13 +7,14 @@
 #include "sync_out_puter.h"
 #include "server_main_test.hpp"
 
-std::mutex SyncOutPuter::globalStreamLock;
-
-
 int _tmain(int argc, wchar_t* argv[])
 {
-    const std::wstring          pipeName = L"testPipe";
-    return ServerMainTest<wchar_t>(pipeName, [](std::basic_string<wchar_t>& pipeName) -> bool
+    std::wstring          pipeName = L"\\\\.\\pipe\\iohelper_testPipe";
+
+    boost::asio::io_service ioService;
+    boost::asio::add_service(ioService, new boost::asio::windows::stream_handle_service(ioService));
+
+    return ServerMainTest<wchar_t>(pipeName, ioService, [&pipeName]() -> bool
     {
         STARTUPINFO si{};
         PROCESS_INFORMATION pi{};
@@ -22,7 +23,7 @@ int _tmain(int argc, wchar_t* argv[])
         si.wShowWindow = SW_SHOW;
 
         // Start the child process. 
-        if (!CreateProcess(_T("cloud_client.exe"),   // No module name (use command line)
+        if (!CreateProcess(L"cloud_client.exe",   // No module name (use command line)
             &pipeName[0],        // Command line
             NULL,           // Process handle not inheritable
             NULL,           // Thread handle not inheritable
@@ -37,6 +38,8 @@ int _tmain(int argc, wchar_t* argv[])
             SYNC_OUTPUT() << "[Main:]" << "CreateProcess failed. Last error = " << GetLastError() << ".";
             return false;
         }
+
+        Sleep(1000);
 
         return true;
     });

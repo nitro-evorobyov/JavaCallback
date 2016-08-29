@@ -5,36 +5,28 @@
 #include <functional>
 #include <thread>
 
+#include <boost/asio.hpp>
 
 #include "sync_out_puter.h"
+
 #include "helper.h"
 
 
 std::mutex SyncOutPuter::globalStreamLock;
 
-template<class TChar>
-int ClientMainTest(const std::basic_string<TChar>&  pipeName)
+template<class TChar, class TAsioTransport>
+int ClientMainTest(boost::asio::io_service& ioService, std::function<bool(TAsioTransport&)> transportInit)
 {
-    SYNC_OUTPUT() << "[Client:]" << "Start Main. Create pipe with name: " << pipeName.c_str();
+    SYNC_OUTPUT() << "[Client:]" << "Start Main. Create pipe with name: ";
 
-    Nitro::Community::helper::native_io_t   connectPipe = Nitro::Community::helper::connect_to_server(pipeName);
-
-    SYNC_OUTPUT() << "[Client:]" << "Start Main.";
-
-    if (!Nitro::Community::helper::is_valid(connectPipe))
-    {
-        return -1;
-    }
-
-
-    boost::asio::io_service ioService;
-    boost::asio::add_service(ioService, new boost::asio::windows::stream_handle_service(ioService));
+    // 
 
     std::shared_ptr<boost::asio::io_service::work>  worker(new boost::asio::io_service::work(ioService));
-
     std::thread workerThread([&](){ ioService.run(); });
 
-    Nitro::Community::helper::async_stream_t    streamToRead(ioService, connectPipe);
+    TAsioTransport     clientTransport(ioService);
+
+    transportInit(clientTransport);//clientTransport.connect(boost::asio::local::stream_protocol::endpoint(pipeName));
 
     bool    stopProcessing = false;
     bool    readyToSend = true;
@@ -50,7 +42,7 @@ int ClientMainTest(const std::basic_string<TChar>&  pipeName)
 
             SYNC_OUTPUT() << "[Client:]" << "Before send buffer:" << bufferSend;
 
-            streamToRead.async_write_some(boost::asio::buffer(bufferSend, 2048),
+            clientTransport.async_write_some(boost::asio::buffer(bufferSend, 2048),
                                           [&](const boost::system::error_code& error, std::size_t bytes_transferred)
             {
                 if (error)
@@ -62,7 +54,7 @@ int ClientMainTest(const std::basic_string<TChar>&  pipeName)
 
                 SYNC_OUTPUT() << "[Client:]" << "After send buffer. Try to receive.";
 
-                streamToRead.async_read_some(boost::asio::buffer(bufferRecv, 2048),
+                clientTransport.async_read_some(boost::asio::buffer(bufferRecv, 2048),
                                              [&](const boost::system::error_code& error, std::size_t bytes_transferred)
                 {
                     if (error)
@@ -83,7 +75,7 @@ int ClientMainTest(const std::basic_string<TChar>&  pipeName)
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
-    Nitro::Community::helper::close(connectPipe);
+    clientTransport.close();
 
     worker.reset();
 
