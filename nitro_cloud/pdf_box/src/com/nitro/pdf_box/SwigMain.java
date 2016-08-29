@@ -5,6 +5,7 @@ import com.nitro.pdf_box.task.TaskCancelFromJava;
 import com.nitro.pdf_box.task.TaskSimple;
 import com.nitro.pdf_box.task.TaskThrowFromJava;
 
+import java.nio.file.Paths;
 import java.util.Random;
 import java.util.Vector;
 
@@ -29,7 +30,8 @@ public class SwigMain {
         System.out.println("************************************************");
 
         try {
-            System.loadLibrary("nitro_cloud");
+            System.load(Paths.get("./").toAbsolutePath().getParent().getParent()
+                    .resolve("x64").resolve("Debug").resolve("nitro_cloud.dll").toFile().getCanonicalPath());
 
             Random rand = new Random();
 
@@ -80,7 +82,7 @@ public class SwigMain {
                 }
             }
         } catch (Exception ex) {
-
+            ex.printStackTrace();
         }
     }
 }
