@@ -20,17 +20,22 @@
 INIT_SYNCOUTPUTER()
 INIT_TASK_COUNTER()
 
+
 #if 1
 
-
+//#define LOG_FILTER
 
 int main(int c, _TCHAR* argv[]) {
     
-#if 0
+#ifdef LOG_FILTER
+
+#   if 0
     SyncOutPuter::exclude.insert("SERVER"); 
     SyncOutPuter::exclude.insert("TASK");
-#else
+#   else
     SyncOutPuter::exclude.insert("Client");
+#   endif
+
 #endif
 
     std::thread server([]()
