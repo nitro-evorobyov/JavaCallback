@@ -128,7 +128,7 @@ private:
         if (thisTask)
         {
             thisTask->m_progress++;
-            std::this_thread::sleep_for(std::chrono::milliseconds(rand()%100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(300 + rand()%100));
             SYNC_OUTPUT(thisTask->m_strId.c_str()) << "******************* WORKING progress = " << thisTask->m_progress << "*******************";
             SYNC_OUTPUT(thisTask->m_strId.c_str()) << "Thread ID = " << std::this_thread::get_id();
         }
