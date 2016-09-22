@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <mutex>
@@ -11,6 +12,7 @@
 
 #pragma warning(push)
 #pragma warning( disable: 4996 )
+
 
 class SyncOutPuter
 {
