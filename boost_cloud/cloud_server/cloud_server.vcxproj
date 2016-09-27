@@ -150,7 +150,9 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\server_main_test.hpp" />
+    <ClInclude Include="..\include\cs_boost\server.hpp" />
+    <ClInclude Include="..\include\cs_boost\server_main_test.hpp" />
+    <ClInclude Include="..\include\cs_boost\server_task.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

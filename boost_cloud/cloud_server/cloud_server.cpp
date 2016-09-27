@@ -5,7 +5,7 @@
 
 
 #include "sync_out_puter.h"
-#include "server_main_test.hpp"
+#include "cs_boost/server_main_test.hpp"
 
 INIT_SYNCOUTPUTER()
 

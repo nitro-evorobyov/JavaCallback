@@ -17,9 +17,16 @@ class CountImpl
     : public Count
 {
 public:
-    CountImpl(int rowIndex = -1)
+    CountImpl(int rowIndex = -1, 
+              std::shared_ptr<nitro::serializer::Reader> reader = nullptr)
         : Count(rowIndex)
+        , m_reader (reader)
     {
+    }
+
+    void SetReader(std::shared_ptr<nitro::serializer::Reader> reader)
+    {
+        m_reader = reader;
     }
 
     std::string  Run() override
@@ -36,7 +43,6 @@ public:
 #ifdef ENABLE_LOG
             SYNC_OUTPUT("=CountImpl=") << "Result - the chars count of Row[" << m_rowIndex << "] = " << charsCount;
 #endif
-
         }
         else
         {
@@ -45,6 +51,21 @@ public:
 
         return outputBuffer.str();
     }
+
+private:
+
+    std::shared_ptr<nitro::serializer::Reader>  GetReader()
+    {
+        if (m_reader == nullptr)
+        {
+            m_reader.reset(new nitro::serializer::Reader(fileName));
+        }
+
+        return m_reader;
+    }
+
+private:
+    std::shared_ptr<nitro::serializer::Reader>  m_reader;
 };
 
 
@@ -52,8 +73,9 @@ class CommandGenerator
     : public ICommandGenerator
 {
 public:
-    CommandGenerator()
+    CommandGenerator(std::shared_ptr<nitro::serializer::Reader> reader = nullptr)
         : m_iteration(4000)
+        , m_commonReader(reader)
     {
     }
 
@@ -94,7 +116,14 @@ public:
 #ifdef ENABLE_LOG
                 SYNC_OUTPUT("=CommandGenerator=") << "Read CommandType from stream. The type is CountCommand";
 #endif
-                return Base::Deserialize<CountImpl>(readStream);
+                auto command = Base::Deserialize<CountImpl>(readStream);
+                
+                if (m_commonReader != nullptr)
+                {
+                    command->SetReader(m_commonReader);
+                }
+
+                return command;
             }
             break;
         }
@@ -103,7 +132,9 @@ public:
     }
 
 private:
-    int  m_iteration;
+    int     m_iteration;
+
+    std::shared_ptr<nitro::serializer::Reader>  m_commonReader;
 };
 
 }

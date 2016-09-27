@@ -24,13 +24,13 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cs_boost\server.hpp">
+    <ClInclude Include="..\include\cs_libuv\server.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cs_boost\server_main_test.hpp">
+    <ClInclude Include="..\include\cs_libuv\server_main_test.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cs_boost\server_task.hpp">
+    <ClInclude Include="..\include\cs_libuv\server_task.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cloud_server.cpp">
+    <ClCompile Include="libuv_server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -58,6 +58,8 @@ void PrepareSample()
 }
 
 
+//#define BOOST_ENGINE
+
 int main(int argc, char* argv[])
 {
     PrepareSample();
@@ -68,6 +70,8 @@ int main(int argc, char* argv[])
     si.cb = sizeof(si);
     si.wShowWindow = SW_SHOW;
 
+
+#ifdef BOOST_ENGINE
     // Start the child process. 
     if (!CreateProcess(L"cloud_server.exe",   // No module name (use command line)
         0,        // Command line
@@ -106,6 +110,51 @@ int main(int argc, char* argv[])
             return false;
         }
     }
+
+#else
+
+    // Start the child process. 
+    if (!CreateProcess(L"libuv_server.exe",   // No module name (use command line)
+        0,        // Command line
+        NULL,           // Process handle not inheritable
+        NULL,           // Thread handle not inheritable
+        FALSE,          // Set handle inheritance to FALSE
+        CREATE_NEW_CONSOLE,              // No creation flags
+        NULL,           // Use parent's environment block
+        NULL,           // Use parent's starting directory 
+        &si,            // Pointer to STARTUPINFO structure
+        &pi)           // Pointer to PROCESS_INFORMATION structure
+        )
+    {
+        // // // SYNC_OUTPUT() << "[Main:]" << "CreateProcess failed. Last error = " << GetLastError() << ".";
+        return false;
+    }
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    for (int clientIndex = 0; clientIndex < 4; ++clientIndex)
+    {
+        // Start the child process. 
+        if (!CreateProcess(L"libuv_client.exe",   // No module name (use command line)
+            0,        // Command line
+            NULL,           // Process handle not inheritable
+            NULL,           // Thread handle not inheritable
+            FALSE,          // Set handle inheritance to FALSE
+            CREATE_NEW_CONSOLE,              // No creation flags
+            NULL,           // Use parent's environment block
+            NULL,           // Use parent's starting directory 
+            &si,            // Pointer to STARTUPINFO structure
+            &pi)           // Pointer to PROCESS_INFORMATION structure
+            )
+        {
+            // // // SYNC_OUTPUT() << "[Main:]" << "CreateProcess failed. Last error = " << GetLastError() << ".";
+            return false;
+        }
+    }
+
+
+
+#endif
 	return 0;
 }
 

@@ -5,10 +5,9 @@
 #include <functional>
 #include <list>
 
-#include "sync_out_puter.h"
 #include "server.hpp"
-#include "performance_provider.h"
-#include "command/command_impl.h"
+#include "../performance_provider.h"
+#include "../command/command_impl.h"
 
 
 int ServerMainTest(const std::string&  socketAddr)

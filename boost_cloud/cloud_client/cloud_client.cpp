@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "client_main_test.hpp"
+#include "cs_boost/client_main_test.hpp"
 
 INIT_SYNCOUTPUTER()
 

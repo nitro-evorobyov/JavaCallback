@@ -7,9 +7,9 @@
 
 #include <boost/asio.hpp>
 
-#include "define.h"
-#include "sync_out_puter.h"
-#include "command/command_impl.h"
+#include "../define.h"
+#include "../sync_out_puter.h"
+#include "../command/command_impl.h"
 
 
 int ClientMainTest()
@@ -29,6 +29,9 @@ int ClientMainTest()
 
     char    bufferRecv[2048]{};
 
+    std::shared_ptr<nitro::serializer::Reader> reader(new nitro::serializer::Reader(fileName));
+    nitro::command::CommandGenerator    generator(reader);
+
     while (!stopProcessing)
     {
         if (readyToSend)
@@ -47,7 +50,6 @@ int ClientMainTest()
                 }
 
 
-                nitro::command::CommandGenerator    generator;
 
                 std::stringstream   commandStream;
                 commandStream.str(&bufferRecv[0]);

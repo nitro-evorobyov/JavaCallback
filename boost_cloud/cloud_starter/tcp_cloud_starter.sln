@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cloud_starter", "cloud_starter\cloud_starter.vcxproj", "{A1235894-B9DA-4192-9624-4166EF79FBEB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tcp_cloud_starter", "cloud_starter\cloud_starter.vcxproj", "{A1235894-B9DA-4192-9624-4166EF79FBEB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cloud_server", "..\cloud_server\cloud_server.vcxproj", "{18C6B3DA-EB5B-4C8A-B377-A6F15CEBB3DF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cloud_client", "..\cloud_client\cloud_client.vcxproj", "{AEB543D2-E590-47F0-A4E2-AD97E4994185}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libuv_client", "..\libuv_client\libuv_client.vcxproj", "{FE7CB2C6-C458-43F9-9922-3EAE613FF427}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libuv_server", "..\libuv_server\libuv_server.vcxproj", "{A80F3117-7DFE-46F4-A655-0DDD52904D4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,18 @@ Global
 		{AEB543D2-E590-47F0-A4E2-AD97E4994185}.Release|Win32.Build.0 = Release|Win32
 		{AEB543D2-E590-47F0-A4E2-AD97E4994185}.Release|x64.ActiveCfg = Release|x64
 		{AEB543D2-E590-47F0-A4E2-AD97E4994185}.Release|x64.Build.0 = Release|x64
+		{FE7CB2C6-C458-43F9-9922-3EAE613FF427}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FE7CB2C6-C458-43F9-9922-3EAE613FF427}.Debug|Win32.Build.0 = Debug|Win32
+		{FE7CB2C6-C458-43F9-9922-3EAE613FF427}.Debug|x64.ActiveCfg = Debug|Win32
+		{FE7CB2C6-C458-43F9-9922-3EAE613FF427}.Release|Win32.ActiveCfg = Release|Win32
+		{FE7CB2C6-C458-43F9-9922-3EAE613FF427}.Release|Win32.Build.0 = Release|Win32
+		{FE7CB2C6-C458-43F9-9922-3EAE613FF427}.Release|x64.ActiveCfg = Release|Win32
+		{A80F3117-7DFE-46F4-A655-0DDD52904D4F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A80F3117-7DFE-46F4-A655-0DDD52904D4F}.Debug|Win32.Build.0 = Debug|Win32
+		{A80F3117-7DFE-46F4-A655-0DDD52904D4F}.Debug|x64.ActiveCfg = Debug|Win32
+		{A80F3117-7DFE-46F4-A655-0DDD52904D4F}.Release|Win32.ActiveCfg = Release|Win32
+		{A80F3117-7DFE-46F4-A655-0DDD52904D4F}.Release|Win32.Build.0 = Release|Win32
+		{A80F3117-7DFE-46F4-A655-0DDD52904D4F}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
