@@ -24,6 +24,7 @@ struct WorkParams
 static std::shared_ptr<nitro::command::ICommandGenerator>  commandGenerator = std::make_shared<nitro::command::CommandGenerator>();
 static std::shared_ptr<nitro::PerformanceProvider>  performance;
 
+nitro::command::statistic::ResultCollection    resultCollection("../libuv_result.txt");
 
 static void SomeWorkHandleStat(uv_work_t* req)
 {
@@ -51,6 +52,8 @@ static void  AfterSomeWorkHandleStat(uv_work_t* req, int status)
     else
     {
         performance.reset();
+
+        resultCollection.Dump();
     }
 }
 
@@ -61,7 +64,7 @@ int ServerMainTest(const std::string&  socketAddr)
 
     SYNC_OUTPUT("SERVER") << "Start server";
 
-    nitro::community::Server    server(socketAddr, SERVER_PORT, loop);
+    nitro::community::Server    server(socketAddr, SERVER_PORT, loop, resultCollection);
 
     uv_work_t   work;
 

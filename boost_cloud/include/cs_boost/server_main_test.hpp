@@ -12,8 +12,10 @@
 
 int ServerMainTest(const std::string&  socketAddr)
 {
+    nitro::command::statistic::ResultCollection    resultCollection("../boost_result.txt");
+
     boost::asio::io_service     ioService;
-    nitro::community::Server    server(socketAddr, ioService);
+    nitro::community::Server    server(socketAddr, ioService, resultCollection);
 
     std::list<std::thread>    threadWorkerPull;
 
@@ -36,6 +38,8 @@ int ServerMainTest(const std::string&  socketAddr)
             server.SendCommands(commandGenerator);
             std::this_thread::yield();
         }
+
+        resultCollection.Dump();
     }
 
     system("pause");

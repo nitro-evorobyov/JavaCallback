@@ -20,9 +20,11 @@ class Server
 public:
     Server(const std::string& connectionUri, 
            int  port,
-           uv_loop_t*   loop)
+           uv_loop_t*   loop,
+           command::statistic::ResultCollection&  resultCollector)
       : m_loop(loop)
       , m_stopLoop(false)
+      , m_resultCollector(resultCollector)
     {
         signal(SIGINT, SignalInterruptedHandle);
 
@@ -120,7 +122,7 @@ private:
         }
         serverThis->m_pullLocker.lock();
 
-        auto serverTask = std::make_shared<ServerTask>(serverThis->m_loop, server);
+        auto serverTask = std::make_shared<ServerTask>(serverThis->m_loop, server, serverThis->m_resultCollector);
 
         serverThis->m_taskPull.push_back(serverTask);
         serverThis->m_pullLocker.unlock();
@@ -136,6 +138,8 @@ private:
 
     std::vector<std::shared_ptr<ServerTask>>        m_taskPull;
     std::mutex                                      m_pullLocker;
+    command::statistic::ResultCollection&                      m_resultCollector;
+
 };
 
 }

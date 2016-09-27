@@ -28,12 +28,14 @@ class ServerTask
 {
 public:
 
-    ServerTask(uv_loop_t* loopToInit, uv_stream_t* serverToInit)
+    ServerTask(uv_loop_t* loopToInit, 
+               uv_stream_t* serverToInit, 
+               command::statistic::ResultCollection&  resultCollector)
         : m_bufferSend(MESSAGE_SIZE, 0)
         , m_mainLoop(loopToInit)
         , m_transport(new uv_tcp_t{})
         , m_streamWriter(new uv_write_t{})
-        , m_isBusy(false)
+        , m_resultCollector(resultCollector)
     {
         std::stringstream idStream;
         idStream << "TASK Id=" << std::rand() % 1024;
@@ -70,18 +72,20 @@ public:
 
     bool IsBusy() const
     {
-        return m_isBusy;
+        return m_currentCommandResult != nullptr;
     }
 
 
     void SendCommad(std::shared_ptr<nitro::command::Base>& command)
     {
-        m_isBusy = true;
+        m_currentCommandResult.reset(new command::statistic::Result());
 
         std::stringstream   commandBuffer;
         command::Base::Serialize(commandBuffer, *(command.get()));
 
         m_bufferSend = commandBuffer.str();
+        
+        m_currentCommandResult->request = m_bufferSend;
 
         uv_buf_t bufResp = uv_buf_init(&m_bufferSend[0], m_bufferSend.size());
 
@@ -91,9 +95,6 @@ public:
                  1,
                  HandleWrite);
     }
-
-
-
 
 private:
 
@@ -134,10 +135,13 @@ private:
                 << "Async read end. Read buffer was get:"
                 << (char *)&buf->base[0];
 #endif
+            thisTask->m_currentCommandResult->response = (char *)&buf->base[0];
+            thisTask->m_resultCollector.AddResult(thisTask->m_currentCommandResult);
+
             std::this_thread::yield();
         }
 
-        thisTask->m_isBusy = false;
+        thisTask->m_currentCommandResult.reset();
     }
 
 
@@ -168,7 +172,9 @@ private:
     std::string                     m_bufferSend;
     std::vector<char>               m_bufferRecv;
 
-    bool                            m_isBusy;
+    std::shared_ptr<command::statistic::Result>     m_currentCommandResult;
+
+    command::statistic::ResultCollection&           m_resultCollector;
 };
 
 

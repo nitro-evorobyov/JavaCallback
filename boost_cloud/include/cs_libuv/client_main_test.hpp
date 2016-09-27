@@ -13,8 +13,6 @@
 #include "../command/command_impl.h"
 
 
-#if 1
-
 namespace nitro
 {
 namespace community
@@ -184,92 +182,3 @@ int ClientMainTest(const std::string& connectionUri)
 
 }
 
-#else
-
-void HandleRead(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf);
-
-
-void HandleAllocate(uv_handle_t *handle, size_t size, uv_buf_t *buf)
-{
-    buf->base = (char*)malloc(size);
-    buf->len = size;
-}
-
-void HandleWrite(uv_write_t* req, int status)
-{
-    uv_read_start(req->handle, HandleAllocate, HandleRead);
-}
-
-std::string response;
-uv_write_t write_req;
-
-
-void HandleRead(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf)
-{
-    if (nread == -1)
-    {
-        fprintf(stderr, "error echo_read");
-        return;
-    }
-
-    nitro::command::CommandGenerator    generator;
-
-    std::stringstream   commandStream;
-    commandStream.str(&buf->base[0]);
-    auto receivedCommand = generator.FromStream(commandStream);
-
-
-    free(buf->base);
-
-    if (receivedCommand != nullptr)
-    {
-        response = receivedCommand->Run();
-
-
-        uv_buf_t bufResp{ response.size(), &response[0] };
-
-        uv_write(&write_req,
-                 stream,
-                 &bufResp,
-                 1,
-                 HandleWrite);
-    }
-}
-
-
-void HandleNewConnection(uv_connect_t* req, int status)
-{
-    if (status == -1) {
-        fprintf(stderr, "error on_write_end");
-        return;
-    }
-
-    uv_read_start(req->handle, HandleAllocate, HandleRead);
-}
-
-
-int ClientMainTest(const std::string& connectionUri)
-{
-    uv_loop_t* loop = uv_default_loop();
-
-    SYNC_OUTPUT("SERVER") << "Start client";
-
-    uv_connect_t    connect{};
-    uv_tcp_t        socket{};
-
-    uv_tcp_init(loop, &socket);
-
-    struct sockaddr_in dest;
-    uv_ip4_addr(connectionUri.c_str(), SERVER_PORT, &dest);
-
-    uv_tcp_connect(&connect, &socket, (const struct sockaddr*)&dest, HandleNewConnection);
-
-    uv_run(loop, UV_RUN_DEFAULT);
-
-    system("pause");
-
-    return 0;
-
-}
-
-#endif

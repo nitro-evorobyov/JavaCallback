@@ -13,12 +13,14 @@ class Server
 {
 public:
     Server(const std::string& connectionUri,
-           boost::asio::io_service& service)
+           boost::asio::io_service& service,
+           command::statistic::ResultCollection&  resultCollector)
            : m_ioService(service)
            , m_strand(service)
            , m_serviceHolder(new boost::asio::io_service::work(service))
            , m_stopLoop(false)
            , m_acceptor(service, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(connectionUri), 80))
+           , m_resultCollector(resultCollector)
     {
         SYNC_OUTPUT("Server")  << "Create server.";
     }
@@ -33,7 +35,7 @@ public:
     {
         SYNC_OUTPUT("Server") << "Start awaiting loop.";
 
-        auto serverTask = std::make_shared <ServerTask> (m_ioService);
+        auto serverTask = std::make_shared <ServerTask>(m_ioService, m_resultCollector);
 
         m_acceptor.async_accept(serverTask->GetTransport(),
                                 boost::bind(&Server::HandleAccept,
@@ -95,7 +97,7 @@ private:
         m_taskPull.push_back(serverTask);
         m_pullLocker.unlock();
 
-        serverTask = std::make_shared <ServerTask>(m_ioService);
+        serverTask = std::make_shared <ServerTask>(m_ioService, m_resultCollector);
         m_acceptor.async_accept(serverTask->GetTransport(),
                                 boost::bind(&Server::HandleAccept,
                                 this,
@@ -115,6 +117,9 @@ private:
     std::vector<std::shared_ptr<ServerTask>>        m_taskPull;
     std::mutex                                      m_pullLocker;
     std::shared_ptr<boost::asio::io_service::work>  m_serviceHolder;
+
+    command::statistic::ResultCollection&           m_resultCollector;
+
 };
 
 }
