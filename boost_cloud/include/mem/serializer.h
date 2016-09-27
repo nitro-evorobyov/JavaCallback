@@ -45,7 +45,7 @@ class Reader
 {
 public:
     Reader(const std::string& file)
-        : FileHolder(file, "rb")
+        : FileHolder(file, "rb+")
     {
     }
 
